@@ -1,4 +1,6 @@
-# PR auto-labeling based on changed files
+# PR auto-labeling by changed files
+
+# ── Area labels ──
 
 "area: ui":
   - changed-files:
@@ -8,22 +10,44 @@
       - 'src/App.tsx'
       - 'index.html'
 
+"area: graph":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/components/GraphView.tsx'
+      - 'src/hooks/**'
+
 "area: data":
   - changed-files:
     - any-glob-to-any-file:
-      - 'src/data/**'
+      - 'src/data/schema.ts'
+      - 'src/data/repository.ts'
+      - 'src/data/sqlRepository.ts'
+      - 'src/data/memoryRepository.ts'
+
+"area: domain":
+  - changed-files:
+    - any-glob-to-any-file:
       - 'src/domain/**'
+      - 'src/data/validation.ts'
+      - 'src/data/id.ts'
+
+"area: tauri":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src-tauri/**'
+      - 'src/data/createRepository.ts'
+      - 'src/data/demoSeed.ts'
 
 "area: infra":
   - changed-files:
     - any-glob-to-any-file:
-      - 'src-tauri/**'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
       - 'tsconfig.node.json'
       - 'vite.config.ts'
       - '.github/**'
+      - '.gitignore'
 
 "area: docs":
   - changed-files:
@@ -35,6 +59,23 @@
 "area: tests":
   - changed-files:
     - any-glob-to-any-file:
-      - 'src/**/*.test.ts'
-      - 'src/**/*.test.tsx'
+      - 'src/**/*.test.*'
       - 'src/test/**'
+
+# ── Type labels ──
+
+"style":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/styles.css'
+  - head-branch: ['^style/']
+
+"refactor":
+  - head-branch: ['^refactor/', '^cleanup/']
+
+"chore":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/**'
