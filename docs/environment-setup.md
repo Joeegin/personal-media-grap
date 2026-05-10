@@ -5,7 +5,6 @@ Run these commands yourself before verification.
 ## Node Dependencies
 
 ```bash
-cd "/Users/joeegin/Documents/personal-media-graph"
 npm install
 ```
 
@@ -31,7 +30,6 @@ Tauri's SQL plugin requires Rust 1.77.2 or newer.
 Use your GitHub username and either your public GitHub email or GitHub noreply email:
 
 ```bash
-cd "/Users/joeegin/Documents/personal-media-graph"
 git config user.name "YOUR_GITHUB_USERNAME"
 git config user.email "YOUR_GITHUB_NOREPLY_EMAIL"
 ```
