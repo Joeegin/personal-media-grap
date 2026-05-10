@@ -503,6 +503,65 @@ label {
   gap: 10px;
 }
 
+.stepper {
+  display: grid;
+  grid-template-columns: 1fr 28px;
+  align-items: stretch;
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stepper:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(201 75 50 / 12%);
+}
+
+.stepper input {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+}
+
+.stepper input::placeholder {
+  color: var(--muted);
+}
+
+.stepperButtons {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  border-left: 1px solid var(--line);
+}
+
+.stepperButtons button {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  transition: color 0.1s ease, background 0.1s ease;
+}
+
+.stepperButtons button:hover {
+  color: var(--ink);
+  background: rgb(39 37 34 / 6%);
+}
+
+.stepperButtons button:first-child {
+  border-bottom: 1px solid var(--line);
+}
+
 .inlineInput {
   padding-right: 8px;
   background: var(--panel-strong);
