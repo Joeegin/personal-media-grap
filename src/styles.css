@@ -56,7 +56,7 @@ button {
 
 .appFrame {
   display: grid;
-  grid-template-columns: 248px minmax(420px, 1fr) 380px;
+  grid-template-columns: 220px minmax(400px, 1fr) 340px;
   height: 100vh;
   overflow: hidden;
 }
@@ -726,13 +726,13 @@ label {
   margin: 0;
 }
 
-@media (max-width: 1120px) {
+@media (max-width: 1040px) {
   body {
     min-width: 760px;
   }
 
   .appFrame {
-    grid-template-columns: 210px minmax(360px, 1fr);
+    grid-template-columns: 200px minmax(360px, 1fr);
   }
 
   .detailPanel {
