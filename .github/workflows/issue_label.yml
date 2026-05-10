@@ -16,34 +16,70 @@ jobs:
           script: |
             const title = context.payload.issue.title.toLowerCase();
             const body = (context.payload.issue.body || '').toLowerCase();
-            const text = title + ' ' + body;
+            const text = title + '\n' + body;
 
             const labels = [];
 
-            if (/\b(bug|error|crash|broken|fail|regression|not working)\b/.test(text)) {
+            // ── Type ──
+            if (/\b(bug|error|crash|broken|fail|regression|not working|incorrect)\b/.test(text)) {
               labels.push('bug');
             }
-            if (/\b(feature|enhancement|request|would like|proposal)\b/.test(text)) {
+            if (/\b(feature|enhancement|request|would like|proposal|wish)\b/.test(text)) {
               labels.push('enhancement');
             }
-            if (/\b(ui|css|style|layout|design|icon|visual|font)\b/.test(text)) {
+            if (/\b(refactor|restructur|clean\s*up|reorgani|simplif|extract)\b/.test(text)) {
+              labels.push('refactor');
+            }
+            if (/\b(style|css|visual|polish|looks|pretty|ugly|beautify)\b/.test(text)) {
+              labels.push('style');
+            }
+            if (/\b(dependenc|upgrade|bump|update\s+package|lockfile|chore|maint)\b/.test(text)) {
+              labels.push('chore');
+            }
+            if (/\b(dx|dev\s*experience|tooling|workflow|cli|script|hotkey|shortcut)\b/.test(text)) {
+              labels.push('dx');
+            }
+
+            // ── Area ──
+            if (/\b(ui|css|style|layout|design|icon|visual|font|color|spacing)\b/.test(text)) {
               labels.push('area: ui');
             }
-            if (/\b(data|schema|database|sql|repository|orm|query)\b/.test(text)) {
+            if (/\b(graph|node|edge|visuali|react-flow|xyflow|canvas)\b/.test(text)) {
+              labels.push('area: graph');
+            }
+            if (/\b(data|schema|database|sql|repository|orm|query|model|store)\b/.test(text)) {
               labels.push('area: data');
             }
-            if (/\b(build|cargo|rust|tauri|config|npm|vite|ci|workflow|deploy)\b/.test(text)) {
+            if (/\b(type|domain|interface|validat|schema|zod|enum|constant)\b/.test(text)) {
+              labels.push('area: domain');
+            }
+            if (/\b(tauri|rust|cargo|desktop|native|window|macos|sqlite)\b/.test(text)) {
+              labels.push('area: tauri');
+            }
+            if (/\b(build|config|vite|npm|ci|workflow|deploy|github\s*actions)\b/.test(text)) {
               labels.push('area: infra');
             }
-            if (/\b(doc|readme|typo)\b/.test(text)) {
+            if (/\b(doc|readme|typo|guide|tutorial)\b/.test(text)) {
               labels.push('area: docs');
+            }
+            if (/\b(test|spec|coverage|mock|snapshot)\b/.test(text)) {
+              labels.push('area: tests');
+            }
+
+            // ── Priority ──
+            if (/\b(urgent|critical|asap|emergency|block|release)\b/.test(text)) {
+              labels.push('priority: high');
+            }
+            if (/\b(nice to have|low priority|minor|cosmetic)\b/.test(text)) {
+              labels.push('priority: low');
             }
 
             if (labels.length > 0) {
+              const unique = [...new Set(labels)];
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.issue.number,
-                labels: labels
+                labels: unique
               });
             }
