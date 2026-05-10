@@ -71,28 +71,38 @@ export function MediaCollection({
 
 function Cover({ item }: { item: MediaItem }) {
   const [imgError, setImgError] = useState(false);
-  const [coverSrc, setCoverSrc] = useState("");
+  const [localSrc, setLocalSrc] = useState("");
+
+  const isRemote = item.cover.startsWith("http://") || item.cover.startsWith("https://");
 
   useEffect(() => {
+    if (isRemote || !item.cover) {
+      setLocalSrc("");
+      return;
+    }
+
     let cancelled = false;
     setImgError(false);
-    setCoverSrc("");
-
-    if (!item.cover) return;
 
     loadCoverSrc(item.cover).then((src) => {
-      if (!cancelled) setCoverSrc(src);
+      if (!cancelled) setLocalSrc(src);
     });
     return () => {
       cancelled = true;
     };
+  }, [item.id, item.cover, isRemote]);
+
+  useEffect(() => {
+    setImgError(false);
   }, [item.id, item.cover]);
 
-  if (coverSrc && !imgError) {
+  const src = isRemote ? item.cover : localSrc;
+
+  if (src && !imgError) {
     return (
       <img
         className="cover"
-        src={coverSrc}
+        src={src}
         alt=""
         onError={() => setImgError(true)}
       />

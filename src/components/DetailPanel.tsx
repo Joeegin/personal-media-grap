@@ -48,11 +48,21 @@ export function DetailPanel({
   const [coverPreviewSrc, setCoverPreviewSrc] = useState("");
 
   useEffect(() => {
-    let cancelled = false;
     setCoverError(false);
-    setCoverPreviewSrc("");
 
-    if (!draft.cover) return;
+    if (!draft.cover) {
+      setCoverPreviewSrc("");
+      return;
+    }
+
+    const remote = draft.cover.startsWith("http://") || draft.cover.startsWith("https://");
+    if (remote) {
+      setCoverPreviewSrc("");
+      return;
+    }
+
+    let cancelled = false;
+    setCoverPreviewSrc("");
 
     loadCoverSrc(draft.cover).then((src) => {
       if (!cancelled) setCoverPreviewSrc(src);
@@ -306,15 +316,20 @@ export function DetailPanel({
               </button>
             ) : null}
           </div>
-          {coverPreviewSrc && !coverError ? (
-            <div className="coverPreview">
-              <img
-                src={coverPreviewSrc}
-                alt=""
-                onError={() => setCoverError(true)}
-              />
-            </div>
-          ) : null}
+          {(() => {
+            const remote = draft.cover.startsWith("http://") || draft.cover.startsWith("https://");
+            const src = remote ? draft.cover : coverPreviewSrc;
+            if (!src || coverError) return null;
+            return (
+              <div className="coverPreview">
+                <img
+                  src={src}
+                  alt=""
+                  onError={() => setCoverError(true)}
+                />
+              </div>
+            );
+          })()}
         </label>
 
         <label>
