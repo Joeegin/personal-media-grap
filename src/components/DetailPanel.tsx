@@ -6,7 +6,7 @@ import { MEDIA_STATUSES, MEDIA_TYPES, RELATION_TYPES } from "../domain/types";
 import { mediaStatusLabels, mediaTypeLabels, relationTypeLabels } from "../domain/labels";
 import { isTauri } from "@tauri-apps/api/core";
 import { getIncomingRelations, getOutgoingRelations } from "../data/repository";
-import { getCoverSrc } from "../utils/cover";
+import { loadCoverSrc } from "../utils/cover";
 
 interface DetailPanelProps {
   item: MediaItem | null;
@@ -45,6 +45,22 @@ export function DetailPanel({
   const [relationType, setRelationType] = useState<RelationType>("SIMILAR_TO");
   const [preview, setPreview] = useState(true);
   const [coverError, setCoverError] = useState(false);
+  const [coverPreviewSrc, setCoverPreviewSrc] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    setCoverError(false);
+    setCoverPreviewSrc("");
+
+    if (!draft.cover) return;
+
+    loadCoverSrc(draft.cover).then((src) => {
+      if (!cancelled) setCoverPreviewSrc(src);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [draft.cover]);
 
   useEffect(() => {
     if (!item) {
@@ -290,10 +306,10 @@ export function DetailPanel({
               </button>
             ) : null}
           </div>
-          {draft.cover && !coverError ? (
+          {coverPreviewSrc && !coverError ? (
             <div className="coverPreview">
               <img
-                src={getCoverSrc(draft.cover)}
+                src={coverPreviewSrc}
                 alt=""
                 onError={() => setCoverError(true)}
               />
