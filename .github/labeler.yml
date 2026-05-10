@@ -1,0 +1,40 @@
+# PR auto-labeling based on changed files
+
+"area: ui":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/styles.css'
+      - 'src/components/**'
+      - 'src/App.tsx'
+      - 'index.html'
+
+"area: data":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/data/**'
+      - 'src/domain/**'
+
+"area: infra":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src-tauri/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'tsconfig.node.json'
+      - 'vite.config.ts'
+      - '.github/**'
+
+"area: docs":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**'
+      - 'README.md'
+      - '*.md'
+
+"area: tests":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/**/*.test.ts'
+      - 'src/**/*.test.tsx'
+      - 'src/test/**'
