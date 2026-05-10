@@ -1,3 +1,4 @@
+import { isTauri } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
   LibrarySnapshot,
@@ -158,9 +159,24 @@ export function useMediaLibrary() {
 
   const deleteMedia = useCallback(
     async (id: string) => {
-      await runMutation((repo) => repo.deleteMedia(id));
+      await runMutation(async (repo) => {
+        const item = snapshot.mediaItems.find((m) => m.id === id);
+        if (
+          item?.cover &&
+          !item.cover.startsWith("http") &&
+          isTauri()
+        ) {
+          try {
+            const { invoke } = await import("@tauri-apps/api/core");
+            await invoke("delete_cover_file", { path: item.cover });
+          } catch {
+            // Best-effort cleanup; proceed with DB delete regardless
+          }
+        }
+        await repo.deleteMedia(id);
+      });
     },
-    [runMutation]
+    [runMutation, snapshot.mediaItems]
   );
 
   const setMediaTags = useCallback(

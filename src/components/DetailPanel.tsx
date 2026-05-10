@@ -1,10 +1,12 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, ExternalLink, Link2, Save, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ExternalLink, FolderOpen, Link2, Save, Trash2, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { LibrarySnapshot, MediaDraft, MediaItem, RelationType } from "../domain/types";
 import { MEDIA_STATUSES, MEDIA_TYPES, RELATION_TYPES } from "../domain/types";
 import { mediaStatusLabels, mediaTypeLabels, relationTypeLabels } from "../domain/labels";
+import { isTauri } from "@tauri-apps/api/core";
 import { getIncomingRelations, getOutgoingRelations } from "../data/repository";
+import { getCoverSrc } from "../utils/cover";
 
 interface DetailPanelProps {
   item: MediaItem | null;
@@ -42,6 +44,7 @@ export function DetailPanel({
   const [targetId, setTargetId] = useState("");
   const [relationType, setRelationType] = useState<RelationType>("SIMILAR_TO");
   const [preview, setPreview] = useState(true);
+  const [coverError, setCoverError] = useState(false);
 
   useEffect(() => {
     if (!item) {
@@ -92,6 +95,20 @@ export function DetailPanel({
         <p>Create or select media to edit metadata, tags, review, and graph relations.</p>
       </aside>
     );
+  }
+
+  async function handleChooseFile() {
+    const { open } = await import("@tauri-apps/plugin-dialog");
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "Images", extensions: ["jpg", "jpeg", "png", "gif", "webp", "bmp"] }]
+    });
+    if (!selected) return;
+
+    const { invoke } = await import("@tauri-apps/api/core");
+    const destPath = await invoke("save_cover_file", { source: selected });
+    setDraft((prev) => ({ ...prev, cover: destPath as string }));
+    setCoverError(false);
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -256,11 +273,32 @@ export function DetailPanel({
         </div>
 
         <label>
-          Cover URL
-          <input
-            value={draft.cover}
-            onChange={(event) => setDraft({ ...draft, cover: event.target.value })}
-          />
+          Cover
+          <div className="coverField">
+            <input
+              value={draft.cover}
+              onChange={(event) => {
+                setDraft({ ...draft, cover: event.target.value });
+                setCoverError(false);
+              }}
+              placeholder="Paste a URL or choose a file"
+            />
+            {isTauri() ? (
+              <button type="button" onClick={handleChooseFile}>
+                <FolderOpen size={15} />
+                Choose file
+              </button>
+            ) : null}
+          </div>
+          {draft.cover && !coverError ? (
+            <div className="coverPreview">
+              <img
+                src={getCoverSrc(draft.cover)}
+                alt=""
+                onError={() => setCoverError(true)}
+              />
+            </div>
+          ) : null}
         </label>
 
         <label>

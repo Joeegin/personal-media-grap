@@ -567,6 +567,51 @@ label {
   border-bottom: 1px solid rgb(39 37 34 / 8%);
 }
 
+.coverField {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.coverField input {
+  flex: 1;
+}
+
+.coverField button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.coverField button:hover {
+  border-color: var(--line-strong);
+}
+
+.coverPreview {
+  margin-top: 6px;
+  overflow: hidden;
+  background: #ded6c9;
+  border-radius: 7px;
+}
+
+.coverPreview img {
+  display: block;
+  width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+}
+
 .inlineInput {
   padding-right: 8px;
   background: var(--panel-strong);

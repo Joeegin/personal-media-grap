@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
 import type { MediaItem, Tag } from "../domain/types";
 import { mediaStatusLabels, mediaTypeLabels } from "../domain/labels";
 import type { ViewMode } from "../hooks/useMediaLibrary";
+import { getCoverSrc } from "../utils/cover";
 
 interface MediaCollectionProps {
   items: MediaItem[];
@@ -68,8 +70,22 @@ export function MediaCollection({
 }
 
 function Cover({ item }: { item: MediaItem }) {
-  if (item.cover) {
-    return <img className="cover" src={item.cover} alt="" />;
+  const [imgError, setImgError] = useState(false);
+  const coverSrc = getCoverSrc(item.cover);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [item.id, item.cover]);
+
+  if (coverSrc && !imgError) {
+    return (
+      <img
+        className="cover"
+        src={coverSrc}
+        alt=""
+        onError={() => setImgError(true)}
+      />
+    );
   }
 
   return (

@@ -15,7 +15,7 @@ export const mediaDraftSchema = z.object({
     .min(1800)
     .max(currentYear + 5)
     .nullable(),
-  cover: z.string().trim().max(1000).default(""),
+  cover: z.string().trim().max(2000).default(""),
   sourceUrl: z.string().trim().max(1000).default(""),
   rating: z.number().int().min(1).max(5).nullable(),
   review: z.string().max(20000).default("")
