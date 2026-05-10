@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ExternalLink, Link2, Save, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ExternalLink, Link2, Save, Trash2, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { LibrarySnapshot, MediaDraft, MediaItem, RelationType } from "../domain/types";
 import { MEDIA_STATUSES, MEDIA_TYPES, RELATION_TYPES } from "../domain/types";
@@ -177,31 +177,81 @@ export function DetailPanel({
         <div className="fieldGrid">
           <label>
             Year
-            <input
-              type="number"
-              value={draft.year ?? ""}
-              onChange={(event) =>
-                setDraft({
-                  ...draft,
-                  year: event.target.value ? Number(event.target.value) : null
-                })
-              }
-            />
+            <div className="stepper">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={draft.year ?? ""}
+                onChange={(event) => {
+                  const raw = event.target.value.replace(/\D/g, "");
+                  setDraft({
+                    ...draft,
+                    year: raw ? Number(raw) : null
+                  });
+                }}
+              />
+              <div className="stepperButtons">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      year: (draft.year ?? new Date().getFullYear()) + 1
+                    })
+                  }
+                >
+                  <ChevronUp size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      year: (draft.year ?? new Date().getFullYear()) - 1
+                    })
+                  }
+                >
+                  <ChevronDown size={14} />
+                </button>
+              </div>
+            </div>
           </label>
           <label>
             Rating
-            <input
-              type="number"
-              min={1}
-              max={5}
-              value={draft.rating ?? ""}
-              onChange={(event) =>
-                setDraft({
-                  ...draft,
-                  rating: event.target.value ? Number(event.target.value) : null
-                })
-              }
-            />
+            <div className="stepper">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={draft.rating ?? ""}
+                readOnly
+                placeholder="—"
+              />
+              <div className="stepperButtons">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      rating: Math.min(5, (draft.rating ?? 0) + 1)
+                    })
+                  }
+                >
+                  <ChevronUp size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      rating: draft.rating ? (draft.rating > 1 ? draft.rating - 1 : null) : null
+                    })
+                  }
+                >
+                  <ChevronDown size={14} />
+                </button>
+              </div>
+            </div>
           </label>
         </div>
 
