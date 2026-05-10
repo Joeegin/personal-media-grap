@@ -1,5 +1,5 @@
 import { isTauri } from "@tauri-apps/api/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   LibrarySnapshot,
   MediaDraft,
@@ -28,7 +28,7 @@ const emptySnapshot: LibrarySnapshot = {
 };
 
 export function useMediaLibrary() {
-  const [repository, setRepository] = useState<MediaRepository | null>(null);
+  const repositoryRef = useRef<MediaRepository | null>(null);
   const [snapshot, setSnapshot] = useState<LibrarySnapshot>(emptySnapshot);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -61,11 +61,10 @@ export function useMediaLibrary() {
     async function boot() {
       try {
         const repo = await createMediaRepository();
+        if (cancelled) return;
         await repo.initialize();
-        if (cancelled) {
-          return;
-        }
-        setRepository(repo);
+        if (cancelled) return;
+        repositoryRef.current = repo;
         await refresh(repo);
       } catch (caught) {
         if (!cancelled) {
@@ -130,21 +129,22 @@ export function useMediaLibrary() {
 
   const runMutation = useCallback(
     async <T,>(action: (repo: MediaRepository) => Promise<T>): Promise<T | null> => {
-      if (!repository) {
+      const repo = repositoryRef.current;
+      if (!repo) {
         return null;
       }
 
       try {
         setError(null);
-        const result = await action(repository);
-        await refresh(repository);
+        const result = await action(repo);
+        await refresh(repo);
         return result;
       } catch (caught) {
         setError(caught instanceof Error ? caught.message : "Library action failed");
         return null;
       }
     },
-    [repository, refresh]
+    [refresh]
   );
 
   const saveMedia = useCallback(
