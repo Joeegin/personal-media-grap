@@ -1,4 +1,4 @@
-import { isTauri } from "@tauri-apps/api/core";
+import { invoke, isTauri } from "@tauri-apps/api/core";
 
 const cache = new Map<string, string>();
 
@@ -13,9 +13,9 @@ export async function loadCoverSrc(cover: string): Promise<string> {
   if (cached) return cached;
 
   try {
-    const { readFile } = await import("@tauri-apps/plugin-fs");
-    const data = await readFile(cover);
-    const blob = new Blob([data], { type: mimeFromPath(cover) });
+    const bytes = await invoke<number[]>("read_cover_file", { path: cover });
+    const uint8 = new Uint8Array(bytes);
+    const blob = new Blob([uint8], { type: mimeFromPath(cover) });
     const url = URL.createObjectURL(blob);
     cache.set(cover, url);
     return url;

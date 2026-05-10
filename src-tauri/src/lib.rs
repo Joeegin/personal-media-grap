@@ -17,7 +17,7 @@ pub fn run() {
                 .add_migrations("sqlite:personal-media-graph.db", migrations())
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![save_cover_file, delete_cover_file])
+        .invoke_handler(tauri::generate_handler![save_cover_file, delete_cover_file, read_cover_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -72,6 +72,11 @@ fn delete_cover_file(path: String) -> Result<(), String> {
         fs::remove_file(file_path).map_err(|e| format!("Failed to delete file: {}", e))?;
     }
     Ok(())
+}
+
+#[tauri::command]
+fn read_cover_file(path: String) -> Result<Vec<u8>, String> {
+    fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))
 }
 
 fn migrations() -> Vec<Migration> {
