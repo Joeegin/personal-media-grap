@@ -3,7 +3,7 @@ import { ExternalLink, Star } from "lucide-react";
 import type { MediaItem, Tag } from "../domain/types";
 import { mediaStatusLabels, mediaTypeLabels } from "../domain/labels";
 import type { ViewMode } from "../hooks/useMediaLibrary";
-import { getCoverSrc } from "../utils/cover";
+import { loadCoverSrc } from "../utils/cover";
 
 interface MediaCollectionProps {
   items: MediaItem[];
@@ -45,11 +45,11 @@ export function MediaCollection({
             </div>
             <h2>{item.title}</h2>
             <p>{[item.creator, item.year].filter(Boolean).join(" · ") || "No creator yet"}</p>
-            <div className="ratingRow" aria-label={item.rating ? `${item.rating} stars` : "No rating"}>
-              {Array.from({ length: 5 }, (_, index) => (
+            <div className="ratingRow" aria-label={item.rating ? `${item.rating}/10` : "No rating"}>
+              {Array.from({ length: 10 }, (_, index) => (
                 <Star
                   key={index}
-                  size={14}
+                  size={11}
                   fill={item.rating && index < item.rating ? "currentColor" : "none"}
                 />
               ))}
@@ -71,17 +71,38 @@ export function MediaCollection({
 
 function Cover({ item }: { item: MediaItem }) {
   const [imgError, setImgError] = useState(false);
-  const coverSrc = getCoverSrc(item.cover);
+  const [localSrc, setLocalSrc] = useState("");
+
+  const isRemote = item.cover.startsWith("http://") || item.cover.startsWith("https://");
+
+  useEffect(() => {
+    if (isRemote || !item.cover) {
+      setLocalSrc("");
+      return;
+    }
+
+    let cancelled = false;
+    setImgError(false);
+
+    loadCoverSrc(item.cover).then((src) => {
+      if (!cancelled) setLocalSrc(src);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [item.id, item.cover, isRemote]);
 
   useEffect(() => {
     setImgError(false);
   }, [item.id, item.cover]);
 
-  if (coverSrc && !imgError) {
+  const src = isRemote ? item.cover : localSrc;
+
+  if (src && !imgError) {
     return (
       <img
         className="cover"
-        src={coverSrc}
+        src={src}
         alt=""
         onError={() => setImgError(true)}
       />

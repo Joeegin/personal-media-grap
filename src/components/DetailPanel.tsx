@@ -6,7 +6,7 @@ import { MEDIA_STATUSES, MEDIA_TYPES, RELATION_TYPES } from "../domain/types";
 import { mediaStatusLabels, mediaTypeLabels, relationTypeLabels } from "../domain/labels";
 import { isTauri } from "@tauri-apps/api/core";
 import { getIncomingRelations, getOutgoingRelations } from "../data/repository";
-import { getCoverSrc } from "../utils/cover";
+import { loadCoverSrc } from "../utils/cover";
 
 interface DetailPanelProps {
   item: MediaItem | null;
@@ -45,6 +45,32 @@ export function DetailPanel({
   const [relationType, setRelationType] = useState<RelationType>("SIMILAR_TO");
   const [preview, setPreview] = useState(true);
   const [coverError, setCoverError] = useState(false);
+  const [coverPreviewSrc, setCoverPreviewSrc] = useState("");
+
+  useEffect(() => {
+    setCoverError(false);
+
+    if (!draft.cover) {
+      setCoverPreviewSrc("");
+      return;
+    }
+
+    const remote = draft.cover.startsWith("http://") || draft.cover.startsWith("https://");
+    if (remote) {
+      setCoverPreviewSrc("");
+      return;
+    }
+
+    let cancelled = false;
+    setCoverPreviewSrc("");
+
+    loadCoverSrc(draft.cover).then((src) => {
+      if (!cancelled) setCoverPreviewSrc(src);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [draft.cover]);
 
   useEffect(() => {
     if (!item) {
@@ -250,7 +276,7 @@ export function DetailPanel({
                   onClick={() =>
                     setDraft({
                       ...draft,
-                      rating: Math.min(5, (draft.rating ?? 0) + 1)
+                      rating: Math.min(10, (draft.rating ?? 0) + 1)
                     })
                   }
                 >
@@ -290,15 +316,20 @@ export function DetailPanel({
               </button>
             ) : null}
           </div>
-          {draft.cover && !coverError ? (
-            <div className="coverPreview">
-              <img
-                src={getCoverSrc(draft.cover)}
-                alt=""
-                onError={() => setCoverError(true)}
-              />
-            </div>
-          ) : null}
+          {(() => {
+            const remote = draft.cover.startsWith("http://") || draft.cover.startsWith("https://");
+            const src = remote ? draft.cover : coverPreviewSrc;
+            if (!src || coverError) return null;
+            return (
+              <div className="coverPreview">
+                <img
+                  src={src}
+                  alt=""
+                  onError={() => setCoverError(true)}
+                />
+              </div>
+            );
+          })()}
         </label>
 
         <label>

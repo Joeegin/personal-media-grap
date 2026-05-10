@@ -11,12 +11,13 @@ const MAX_FILE_SIZE: u64 = 20 * 1024 * 1024; // 20 MB
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations("sqlite:personal-media-graph.db", migrations())
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![save_cover_file, delete_cover_file])
+        .invoke_handler(tauri::generate_handler![save_cover_file, delete_cover_file, read_cover_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -73,6 +74,11 @@ fn delete_cover_file(path: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn read_cover_file(path: String) -> Result<Vec<u8>, String> {
+    fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))
+}
+
 fn migrations() -> Vec<Migration> {
     vec![Migration {
         version: 1,
@@ -91,7 +97,7 @@ fn migrations() -> Vec<Migration> {
                 review TEXT NOT NULL DEFAULT '',
                 created_at INTEGER NOT NULL,
                 updated_at INTEGER NOT NULL,
-                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5))
+                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 10))
             );
 
             CREATE TABLE IF NOT EXISTS tags (
