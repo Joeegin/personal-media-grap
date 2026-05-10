@@ -505,7 +505,7 @@ label {
 
 .stepper {
   display: grid;
-  grid-template-columns: 1fr 28px;
+  grid-template-columns: 1fr 34px;
   align-items: stretch;
   background: var(--panel-strong);
   border: 1px solid var(--line);
@@ -537,29 +537,34 @@ label {
 .stepperButtons {
   display: grid;
   grid-template-rows: 1fr 1fr;
+  background: rgb(39 37 34 / 3%);
   border-left: 1px solid var(--line);
 }
 
 .stepperButtons button {
   display: grid;
   place-items: center;
-  width: 27px;
+  width: 33px;
   padding: 0;
   color: var(--muted);
   background: transparent;
   border: 0;
   border-radius: 0;
   cursor: pointer;
-  transition: color 0.1s ease, background 0.1s ease;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .stepperButtons button:hover {
   color: var(--ink);
-  background: rgb(39 37 34 / 6%);
+  background: rgb(39 37 34 / 8%);
+}
+
+.stepperButtons button:active {
+  background: rgb(39 37 34 / 13%);
 }
 
 .stepperButtons button:first-child {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgb(39 37 34 / 8%);
 }
 
 .inlineInput {

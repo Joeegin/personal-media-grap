@@ -201,7 +201,7 @@ export function DetailPanel({
                     })
                   }
                 >
-                  <ChevronUp size={14} />
+                  <ChevronUp size={15} />
                 </button>
                 <button
                   type="button"
@@ -212,7 +212,7 @@ export function DetailPanel({
                     })
                   }
                 >
-                  <ChevronDown size={14} />
+                  <ChevronDown size={15} />
                 </button>
               </div>
             </div>
@@ -237,7 +237,7 @@ export function DetailPanel({
                     })
                   }
                 >
-                  <ChevronUp size={14} />
+                  <ChevronUp size={15} />
                 </button>
                 <button
                   type="button"
@@ -248,7 +248,7 @@ export function DetailPanel({
                     })
                   }
                 >
-                  <ChevronDown size={14} />
+                  <ChevronDown size={15} />
                 </button>
               </div>
             </div>
