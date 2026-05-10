@@ -40,12 +40,12 @@ Configure this repository before the first commit:
 ```bash
 git config user.name "YOUR_GITHUB_USERNAME"
 git config user.email "YOUR_GITHUB_NOREPLY_EMAIL"
-git switch -c codex/bootstrap-media-graph
+git switch -c main
 ```
 
 After creating an empty GitHub repository:
 
 ```bash
 git remote add origin git@github.com:YOUR_GITHUB_USERNAME/personal-media-graph.git
-git push -u origin codex/bootstrap-media-graph
+git push -u origin main
 ```
