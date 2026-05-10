@@ -4,6 +4,9 @@ use std::time::SystemTime;
 use tauri::Manager;
 use tauri_plugin_sql::{Migration, MigrationKind};
 
+#[cfg(target_os = "macos")]
+use objc2::{class, msg_send};
+
 const ALLOWED_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "webp", "bmp"];
 const MAX_FILE_SIZE: u64 = 20 * 1024 * 1024; // 20 MB
 
@@ -17,7 +20,23 @@ pub fn run() {
                 .add_migrations("sqlite:personal-media-graph.db", migrations())
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![save_cover_file, delete_cover_file, read_cover_file])
+        .invoke_handler(tauri::generate_handler![
+            save_cover_file,
+            delete_cover_file,
+            read_cover_file,
+            activate_app
+        ])
+        .setup(|_app| {
+            // First attempt: activate during setup. May be too early in dev mode
+            // where Vite hasn't served the page yet, so the frontend retries too.
+            #[cfg(target_os = "macos")]
+            unsafe {
+                let ns_app: *mut objc2::runtime::AnyObject =
+                    msg_send![class!(NSApplication), sharedApplication];
+                let _: () = msg_send![ns_app, activateIgnoringOtherApps: true];
+            }
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -79,6 +98,23 @@ fn read_cover_file(path: String) -> Result<Vec<u8>, String> {
     fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))
 }
 
+/// Called from the frontend after React mounts to reliably activate the app.
+/// On macOS 15 Sequoia, [NSApp activate] is broken, so we use the deprecated
+/// activateIgnoringOtherApps: which still works.
+/// We intentionally do NOT call window.set_focus() here because tao's set_focus()
+/// internally calls [NSApp activate] on macOS, which can override our working
+/// activateIgnoringOtherApps call. The frontend calls getCurrentWindow().setFocus()
+/// separately after this command completes.
+#[tauri::command]
+fn activate_app() {
+    #[cfg(target_os = "macos")]
+    unsafe {
+        let ns_app: *mut objc2::runtime::AnyObject =
+            msg_send![class!(NSApplication), sharedApplication];
+        let _: () = msg_send![ns_app, activateIgnoringOtherApps: true];
+    }
+}
+
 fn migrations() -> Vec<Migration> {
     vec![Migration {
         version: 1,
@@ -97,7 +133,7 @@ fn migrations() -> Vec<Migration> {
                 review TEXT NOT NULL DEFAULT '',
                 created_at INTEGER NOT NULL,
                 updated_at INTEGER NOT NULL,
-                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 10))
+                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5))
             );
 
             CREATE TABLE IF NOT EXISTS tags (
@@ -129,6 +165,40 @@ fn migrations() -> Vec<Migration> {
             CREATE INDEX IF NOT EXISTS media_items_type_idx ON media_items(type);
             CREATE INDEX IF NOT EXISTS media_relations_from_idx ON media_relations(from_id);
             CREATE INDEX IF NOT EXISTS media_relations_to_idx ON media_relations(to_id);
+        "#,
+        kind: MigrationKind::Up,
+    },
+    Migration {
+        version: 2,
+        description: "update_rating_constraint_to_10",
+        sql: r#"
+            PRAGMA foreign_keys = OFF;
+
+            CREATE TABLE media_items_new (
+                id TEXT PRIMARY KEY NOT NULL,
+                title TEXT NOT NULL,
+                creator TEXT NOT NULL DEFAULT '',
+                type TEXT NOT NULL,
+                status TEXT NOT NULL,
+                year INTEGER,
+                cover TEXT NOT NULL DEFAULT '',
+                source_url TEXT NOT NULL DEFAULT '',
+                rating INTEGER,
+                review TEXT NOT NULL DEFAULT '',
+                created_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL,
+                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 10))
+            );
+
+            INSERT INTO media_items_new SELECT * FROM media_items;
+
+            DROP TABLE media_items;
+            ALTER TABLE media_items_new RENAME TO media_items;
+
+            CREATE INDEX IF NOT EXISTS media_items_status_idx ON media_items(status);
+            CREATE INDEX IF NOT EXISTS media_items_type_idx ON media_items(type);
+
+            PRAGMA foreign_keys = ON;
         "#,
         kind: MigrationKind::Up,
     }]
