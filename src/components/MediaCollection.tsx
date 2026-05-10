@@ -45,11 +45,11 @@ export function MediaCollection({
             </div>
             <h2>{item.title}</h2>
             <p>{[item.creator, item.year].filter(Boolean).join(" · ") || "No creator yet"}</p>
-            <div className="ratingRow" aria-label={item.rating ? `${item.rating} stars` : "No rating"}>
-              {Array.from({ length: 5 }, (_, index) => (
+            <div className="ratingRow" aria-label={item.rating ? `${item.rating}/10` : "No rating"}>
+              {Array.from({ length: 10 }, (_, index) => (
                 <Star
                   key={index}
-                  size={14}
+                  size={11}
                   fill={item.rating && index < item.rating ? "currentColor" : "none"}
                 />
               ))}

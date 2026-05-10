@@ -17,7 +17,7 @@ export const mediaDraftSchema = z.object({
     .nullable(),
   cover: z.string().trim().max(2000).default(""),
   sourceUrl: z.string().trim().max(1000).default(""),
-  rating: z.number().int().min(1).max(5).nullable(),
+  rating: z.number().int().min(1).max(10).nullable(),
   review: z.string().max(20000).default("")
 });
 
