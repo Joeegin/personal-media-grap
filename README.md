@@ -1,51 +1,90 @@
 # Personal Media Graph
 
-Local-first macOS desktop app for tracking films, books, series, comics, games, podcasts, tags, notes, and lightweight knowledge-graph relations.
+A local-first desktop application for cataloging and exploring your personal media library. Track films, books, anime, series, comics, games, and podcasts — then connect them through a lightweight knowledge graph.
 
-## Stack
+## Features
 
-- Tauri 2 desktop shell
-- React + TypeScript + Vite
-- SQLite through `@tauri-apps/plugin-sql`
-- Drizzle schema definitions
-- React Flow graph view
+- **Media Library** — Add, edit, and organize media entries with titles, creators, years, ratings, reviews, and cover images
+- **Tagging System** — Group and filter your collection with custom tags
+- **Knowledge Graph** — Link related media through typed relations: adaptations, shared creators, series continuity, and more
+- **Graph Visualization** — Interactive node graph powered by React Flow
+- **Local-First** — All data stored in a local SQLite database — no accounts, no cloud dependency
+- **Cross-Platform** — Runs on macOS, Windows, and Linux via Tauri
 
-## Development
+## Tech Stack
+
+| Layer       | Technology                                   |
+|-------------|----------------------------------------------|
+| Desktop     | [Tauri 2](https://tauri.app)                 |
+| Frontend    | React 18, TypeScript, Vite                   |
+| Database    | SQLite via `@tauri-apps/plugin-sql`          |
+| ORM         | [Drizzle ORM](https://orm.drizzle.team)      |
+| Graph UI    | [React Flow](https://reactflow.dev)          |
+| Validation  | [Zod](https://zod.dev)                       |
+| Testing     | [Vitest](https://vitest.dev) + Testing Library |
+| Styling     | Plain CSS                                    |
+
+## Project Structure
+
+```
+src/
+├── components/        # React UI components
+│   ├── Sidebar.tsx        # Navigation sidebar
+│   ├── MediaCollection.tsx# Media list and grid views
+│   ├── DetailPanel.tsx    # Media detail editor
+│   ├── GraphView.tsx      # Knowledge graph visualization
+│   └── Toolbar.tsx        # Top toolbar
+├── data/              # Data layer
+│   ├── schema.ts          # Drizzle ORM schema definitions
+│   ├── repository.ts      # Repository interface
+│   ├── memoryRepository.ts# In-memory implementation (tests)
+│   ├── sqlRepository.ts   # SQLite implementation
+│   ├── validation.ts      # Zod schemas and validation
+│   └── id.ts              # ID generation
+├── domain/            # Shared domain types
+│   └── types.ts           # MediaItem, Tag, MediaRelation, etc.
+├── hooks/             # React hooks
+│   └── useMediaLibrary.ts # Media library state management
+└── test/              # Test setup
+src-tauri/
+├── src/
+│   ├── main.rs            # Tauri entry point
+│   └── lib.rs             # Plugin registration
+├── Cargo.toml
+└── tauri.conf.json
+```
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org) ≥ 18
+- [Rust](https://rustup.rs) ≥ 1.77.2
+
+### Development
 
 ```bash
+# Install Node dependencies
 npm install
+
+# Start Vite dev server (frontend only)
 npm run dev
-```
 
-Run the desktop app:
-
-```bash
+# Launch the full desktop app
 npm run tauri:dev
-```
 
-Checks:
-
-```bash
+# Run type checking
 npm run typecheck
-npm run build
+
+# Run tests
 npm run test
+
+# Build for production
+npm run tauri:build
 ```
 
-Environment setup notes are in `docs/environment-setup.md`.
+Detailed environment setup instructions are available in [docs/environment-setup.md](docs/environment-setup.md).
 
-## GitHub Setup
+## License
 
-Configure this repository before the first commit:
-
-```bash
-git config user.name "YOUR_GITHUB_USERNAME"
-git config user.email "YOUR_GITHUB_NOREPLY_EMAIL"
-git switch -c main
-```
-
-After creating an empty GitHub repository:
-
-```bash
-git remote add origin git@github.com:YOUR_GITHUB_USERNAME/personal-media-graph.git
-git push -u origin main
-```
+MIT
