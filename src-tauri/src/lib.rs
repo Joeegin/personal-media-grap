@@ -97,7 +97,7 @@ fn migrations() -> Vec<Migration> {
                 review TEXT NOT NULL DEFAULT '',
                 created_at INTEGER NOT NULL,
                 updated_at INTEGER NOT NULL,
-                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5))
+                CHECK (rating IS NULL OR (rating >= 1 AND rating <= 10))
             );
 
             CREATE TABLE IF NOT EXISTS tags (

@@ -276,7 +276,7 @@ export function DetailPanel({
                   onClick={() =>
                     setDraft({
                       ...draft,
-                      rating: Math.min(5, (draft.rating ?? 0) + 1)
+                      rating: Math.min(10, (draft.rating ?? 0) + 1)
                     })
                   }
                 >
