@@ -1,15 +1,16 @@
 :root {
   color-scheme: light;
   font-family:
-    "Avenir Next",
-    "Helvetica Neue",
     system-ui,
     -apple-system,
+    "Helvetica Neue",
     sans-serif;
   background: #ece8df;
   color: #272522;
   font-synthesis: none;
-  text-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   --bg: #ece8df;
   --panel: #f7f4ec;
   --panel-strong: #fffdf7;
@@ -103,7 +104,7 @@ button {
   margin: 0 0 4px;
   color: var(--muted);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -169,7 +170,7 @@ button {
   margin: 24px 4px 10px;
   color: var(--muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -386,7 +387,7 @@ textarea {
   place-items: center;
   color: #fffaf2;
   font-size: 44px;
-  font-weight: 800;
+  font-weight: 700;
   background: var(--blue);
 }
 
@@ -423,7 +424,7 @@ textarea {
 .mediaMetaRow {
   color: var(--muted);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -493,7 +494,7 @@ label {
   gap: 6px;
   color: var(--muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .fieldGrid {
@@ -525,7 +526,7 @@ label {
   justify-content: space-between;
   color: var(--muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .reviewHeader button,
@@ -622,7 +623,7 @@ label {
   padding: 9px 12px;
   color: var(--ink);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   overflow-wrap: anywhere;
   background: #fffdf7;
   border: 1px solid var(--line-strong);
@@ -649,7 +650,7 @@ label {
 .react-flow__edge-text {
   fill: var(--muted);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .emptyState {
